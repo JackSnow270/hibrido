@@ -3,919 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Libro de putas</title>
+    <title>Reproductor de Anime Profesional</title>
     <style>
-        /* CSS */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f5f5f5;
-            color: #333;
-            transition: all 0.3s ease;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        /* Barra superior */
-        .top-bar {
-            position: fixed;
+        .video-container {
+            width: 100%;
+            max-width: 1000px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+            height: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px;
-            background-color: #2c3e50;
-            color: white;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-
-        .menu-btn {
-            background: none;
+            height: 100%;
             border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            margin-right: 20px;
         }
 
-        .search-container {
-            flex-grow: 1;
-            display: flex;
-        }
-
-        .search-input {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            outline: none;
-            font-size: 16px;
-        }
-
-        /* Menú lateral */
-        .sidebar {
-            position: fixed;
-            top: 60px;
-            left: -300px;
-            width: 300px;
-            height: calc(100vh - 60px);
-            background-color: #34495e;
-            color: white;
-            transition: all 0.3s ease;
-            overflow-y: auto;
-            z-index: 999;
-        }
-
-        .sidebar.open {
-            left: 0;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-
-        .sidebar-menu li {
-            padding: 15px 20px;
-            border-bottom: 1px solid #2c3e50;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .sidebar-menu li:hover {
-            background-color: #2c3e50;
-        }
-
-        /* Contenido principal - Estilo de libro */
-        .main-content {
-            margin-top: 80px;
-            padding: 20px;
+        .video-controls {
             display: flex;
             flex-direction: column;
-            align-items: center;
-        }
-
-        .book-container {
-            width: 90%;
-            max-width: 1200px;
-            perspective: 1500px;
-        }
-
-        .book {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            transform-style: preserve-3d;
-            transition: transform 1s;
-        }
-
-        .page {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            top: 0;
-            background: white;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            overflow-y: auto;
-            backface-visibility: hidden;
-            border-radius: 5px;
-        }
-
-        .page-left {
-            left: 0;
-            transform-origin: right center;
-            border-right: 1px solid #eee;
-        }
-
-        .page-right {
-            right: 0;
-            transform-origin: left center;
-            border-left: 1px solid #eee;
-        }
-
-        .anime-card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .anime-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .anime-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .anime-info {
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             padding: 15px;
-        }
-
-        .anime-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .anime-description {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-bottom: 10px;
-        }
-
-        .anime-genres {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .genre-tag {
-            background: #3498db;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        /* Controles del libro */
-        .book-controls {
-            margin-top: 30px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .book-btn {
-            padding: 10px 20px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .book-btn:hover {
-            background: #1a252f;
-        }
-
-        /* Overlay cuando el menú está abierto */
-        .overlay {
-            position: fixed;
-            top: 60px;
+            position: absolute;
+            bottom: 0;
             left: 0;
-            width: 100%;
-            height: calc(100vh - 60px);
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 998;
+            right: 0;
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease;
         }
 
-        .overlay.active {
+        .video-container:hover .video-controls {
             opacity: 1;
-            pointer-events: all;
         }
 
-        /* Modal */
-        .modal {
-            position: fixed;
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #ff0000;
+            border-radius: 3px;
+            width: 0%;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: -5px;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 90%;
-            max-width: 800px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 1001;
-            transition: transform 0.3s ease;
-            max-height: 90vh;
-            overflow-y: auto;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
-        .modal.active {
-            transform: translate(-50%, -50%) scale(1);
+        .progress-container:hover .progress-bar::after {
+            opacity: 1;
         }
 
-        .modal-header {
+        .controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
         }
 
-        .modal-title {
-            font-size: 24px;
-            color: #2c3e50;
+        .left-controls, .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .modal-close {
+        .control-btn {
             background: none;
             border: none;
-            font-size: 24px;
+            color: #fff;
+            font-size: 18px;
             cursor: pointer;
-            color: #7f8c8d;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
         }
 
-        .modal-content {
-            margin-bottom: 20px;
+        .control-btn:hover {
+            color: #ff0000;
         }
 
-        .modal-overlay {
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, width 0.2s;
+        }
+
+        .volume-container:hover .volume-slider {
+            opacity: 1;
+            width: 100px;
+        }
+
+        .volume-bar {
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+            width: 100%;
+        }
+
+        .time {
+            font-size: 14px;
+            color: #ddd;
+            font-family: monospace;
+        }
+
+        .quality-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .quality-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .settings-menu {
+            position: absolute;
+            bottom: 50px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 5px;
+            padding: 10px;
+            width: 150px;
+            display: none;
+            z-index: 10;
+        }
+
+        .settings-menu.show {
+            display: block;
+        }
+
+        .settings-item {
+            color: #fff;
+            padding: 8px 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .settings-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-item i {
+            font-size: 16px;
+        }
+
+        .video-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            font-weight: 500;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .video-container:hover .video-title {
+            opacity: 1;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #ff0000;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Estilos para pantalla completa */
+        .video-container.fullscreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            border-radius: 0;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* Detalles del anime en el modal */
-        .anime-details {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .anime-details-top {
-            display: flex;
-            gap: 20px;
-        }
-
-        .anime-modal-image {
-            width: 250px;
-            height: 350px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .anime-modal-info {
-            flex: 1;
-        }
-
-        .anime-modal-title {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .anime-meta {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            color: #7f8c8d;
-        }
-
-        .anime-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #f39c12;
-            font-weight: bold;
-        }
-
-        .anime-modal-description {
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .anime-characters {
-            margin-top: 20px;
-        }
-
-        .characters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .character-card {
-            text-align: center;
-        }
-
-        .character-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 5px;
-        }
-
-        .character-name {
-            font-size: 12px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .action-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .watch-btn {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .watch-btn:hover {
-            background: #c0392b;
-        }
-
-        .favorite-btn {
-            background: #3498db;
-            color: white;
-        }
-
-        .favorite-btn:hover {
-            background: #2980b9;
+        .video-container.fullscreen .video-wrapper {
+            height: 100%;
+            padding-bottom: 0;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .book {
-                height: auto;
-                transform-style: flat;
+            .video-controls {
+                opacity: 1;
+                padding: 10px;
             }
             
-            .page {
-                position: relative;
-                width: 100%;
-                margin-bottom: 20px;
+            .volume-slider {
+                opacity: 1;
+                width: 60px;
             }
             
-            .page-left, .page-right {
-                transform-origin: center;
-            }
-
-            .modal {
-                width: 95%;
-                padding: 20px;
-            }
-
-            .anime-details-top {
-                flex-direction: column;
-            }
-
-            .anime-modal-image {
-                width: 100%;
-                height: auto;
-                max-height: 300px;
+            .video-title {
+                opacity: 1;
+                font-size: 14px;
+                top: 10px;
+                left: 10px;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Barra superior -->
-    <div class="top-bar">
-        <button class="menu-btn" id="menuBtn">☰</button>
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Buscar anime...">
+    <div class="video-container" id="videoContainer">
+        <div class="video-title">Attack on Titan - Temporada 4 | Episodio 1</div>
+        <div class="loading-spinner" id="loadingSpinner"></div>
+        <div class="video-wrapper">
+            <iframe id="videoPlayer" src="https://www.youtube.com/embed/KZoipAb2fo4?si=vuGMA3FLNz58z-kj&enablejsapi=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
-    </div>
-
-    <!-- Menú lateral -->
-    <div class="sidebar" id="sidebar">
-        <ul class="sidebar-menu">
-            <li data-option="inicio">Inicio</li>
-            <li data-option="populares">Animes Populares</li>
-            <li data-option="estrenos">Nuevos Estrenos</li>
-            <li data-option="generos">Géneros</li>
-            <li data-option="lista">Mi Lista</li>
-            <li data-option="configuracion">Configuración</li>
-            <li data-option="ayuda">Ayuda</li>
-        </ul>
-    </div>
-
-    <!-- Overlay para cerrar el menú -->
-    <div class="overlay" id="overlay"></div>
-
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-header">
-            <h2 class="modal-title" id="modalTitle">Título del Modal</h2>
-            <button class="modal-close" id="modalClose">&times;</button>
-        </div>
-        <div class="modal-content" id="modalContent">
-            <!-- Contenido dinámico se insertará aquí -->
-        </div>
-    </div>
-    <div class="modal-overlay" id="modalOverlay"></div>
-
-    <!-- Contenido principal -->
-    <div class="main-content">
-        <div class="book-container">
-            <div class="book">
-                <!-- Página izquierda -->
-                <div class="page page-left">
-                    <h2>Animes Destacados</h2>
-                    
-                    <div class="anime-card" data-anime="attack-on-titan">
-                        <img src="https://via.placeholder.com/400x225" alt="Attack on Titan" class="anime-image">
-                        <div class="anime-info">
-                            <h3 class="anime-title">Attack on Titan</h3>
-                            <p class="anime-description">La humanidad vive en ciudades rodeadas por enormes muros que los protegen de los titanes, seres gigantescos que devoran personas.</p>
-                            <div class="anime-genres">
-                                <span class="genre-tag">Acción</span>
-                                <span class="genre-tag">Drama</span>
-                                <span class="genre-tag">Fantasía</span>
-                            </div>
+        <div class="video-controls">
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="controls">
+                <div class="left-controls">
+                    <button class="control-btn" id="playPauseBtn"><i class="fas fa-play"></i></button>
+                    <button class="control-btn" id="muteBtn"><i class="fas fa-volume-up"></i></button>
+                    <div class="volume-container">
+                        <div class="volume-slider" id="volumeSlider">
+                            <div class="volume-bar" id="volumeBar"></div>
                         </div>
                     </div>
-                    
-                    <div class="anime-card" data-anime="demon-slayer">
-                        <img src="https://via.placeholder.com/400x225" alt="Demon Slayer" class="anime-image">
-                        <div class="anime-info">
-                            <h3 class="anime-title">Demon Slayer</h3>
-                            <p class="anime-description">Tanjiro Kamado se convierte en un cazador de demonios después de que su familia es asesinada y su hermana convertida en demonio.</p>
-                            <div class="anime-genres">
-                                <span class="genre-tag">Acción</span>
-                                <span class="genre-tag">Aventura</span>
-                                <span class="genre-tag">Shounen</span>
-                            </div>
-                        </div>
-                    </div>
+                    <span class="time" id="currentTime">00:00</span>
+                    <span class="time">/</span>
+                    <span class="time" id="duration">00:00</span>
                 </div>
-                
-                <!-- Página derecha -->
-                <div class="page page-right">
-                    <h2>Recomendados para ti</h2>
-                    
-                    <div class="anime-card" data-anime="jujutsu-kaisen">
-                        <img src="https://via.placeholder.com/400x225" alt="Jujutsu Kaisen" class="anime-image">
-                        <div class="anime-info">
-                            <h3 class="anime-title">Jujutsu Kaisen</h3>
-                            <p class="anime-description">Yuji Itadori se une a una organización secreta de hechiceros para eliminar una poderosa maldición a la que se ha convertido su amigo.</p>
-                            <div class="anime-genres">
-                                <span class="genre-tag">Acción</span>
-                                <span class="genre-tag">Sobrenatural</span>
-                                <span class="genre-tag">Horror</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="anime-card" data-anime="my-hero-academia">
-                        <img src="https://via.placeholder.com/400x225" alt="My Hero Academia" class="anime-image">
-                        <div class="anime-info">
-                            <h3 class="anime-title">My Hero Academia</h3>
-                            <p class="anime-description">En un mundo donde la mayoría tiene superpoderes, Izuku Midoriya sueña con convertirse en héroe a pesar de no tener ningún poder.</p>
-                            <div class="anime-genres">
-                                <span class="genre-tag">Acción</span>
-                                <span class="genre-tag">Comedia</span>
-                                <span class="genre-tag">Superhéroes</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="right-controls">
+                    <button class="control-btn" id="qualityBtn"><i class="fas fa-cog"></i></button>
+                    <button class="control-btn" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
                 </div>
             </div>
-            
-            <div class="book-controls">
-                <button class="book-btn" id="prevBtn">Anterior</button>
-                <button class="book-btn" id="nextBtn">Siguiente</button>
-            </div>
+        </div>
+        <div class="settings-menu" id="settingsMenu">
+            <div class="settings-item" data-quality="auto">Calidad <i class="fas fa-check"></i></div>
+            <div class="settings-item" data-quality="hd">HD</div>
+            <div class="settings-item" data-quality="sd">SD</div>
+            <div class="settings-item" id="speedBtn">Velocidad <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
     <script>
-        // JavaScript
         document.addEventListener('DOMContentLoaded', function() {
-            // Variables
-            const menuBtn = document.getElementById('menuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const book = document.querySelector('.book');
-            const pages = document.querySelectorAll('.page');
-            const modal = document.getElementById('modal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
-            const modalClose = document.getElementById('modalClose');
-            const modalOverlay = document.getElementById('modalOverlay');
-            const menuItems = document.querySelectorAll('.sidebar-menu li');
-            const animeCards = document.querySelectorAll('.anime-card');
+            // Elementos del DOM
+            const videoContainer = document.getElementById('videoContainer');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const muteBtn = document.getElementById('muteBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeBar = document.getElementById('volumeBar');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const qualityBtn = document.getElementById('qualityBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const settingsMenu = document.getElementById('settingsMenu');
+            const loadingSpinner = document.getElementById('loadingSpinner');
             
-            let currentPage = 0;
-            const totalPages = pages.length;
-
-            // Datos de los animes (simulando una base de datos)
-            const animeData = {
-                'attack-on-titan': {
-                    title: 'Attack on Titan',
-                    image: 'https://via.placeholder.com/400x225',
-                    largeImage: 'https://via.placeholder.com/600x900',
-                    description: 'La humanidad vive en ciudades rodeadas por enormes muros que los protegen de los titanes, seres gigantescos que devoran personas. La historia sigue a Eren Yeager, quien jura vengarse de los titanes después de que destruyen su ciudad natal y matan a su madre.',
-                    rating: 9.0,
-                    episodes: 75,
-                    status: 'Finalizado',
-                    genres: ['Acción', 'Drama', 'Fantasía', 'Shounen'],
-                    characters: [
-                        { name: 'Eren Yeager', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Mikasa Ackerman', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Armin Arlert', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Levi Ackerman', image: 'https://via.placeholder.com/100x100' }
-                    ],
-                    year: 2013,
-                    studio: 'Wit Studio / MAPPA'
-                },
-                'demon-slayer': {
-                    title: 'Demon Slayer',
-                    image: 'https://via.placeholder.com/400x225',
-                    largeImage: 'https://via.placeholder.com/600x900',
-                    description: 'Tanjiro Kamado es un joven que vive con su familia en las montañas. Un día, al regresar de un viaje, encuentra que su familia ha sido masacrada por demonios, y que su hermana Nezuko se ha convertido en uno de ellos. Tanjiro decide convertirse en un cazador de demonios para vengar a su familia y encontrar una cura para Nezuko.',
-                    rating: 8.7,
-                    episodes: 26,
-                    status: 'En emisión',
-                    genres: ['Acción', 'Aventura', 'Shounen', 'Sobrenatural'],
-                    characters: [
-                        { name: 'Tanjiro Kamado', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Nezuko Kamado', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Zenitsu Agatsuma', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Inosuke Hashibira', image: 'https://via.placeholder.com/100x100' }
-                    ],
-                    year: 2019,
-                    studio: 'Ufotable'
-                },
-                'jujutsu-kaisen': {
-                    title: 'Jujutsu Kaisen',
-                    image: 'https://via.placeholder.com/400x225',
-                    largeImage: 'https://via.placeholder.com/600x900',
-                    description: 'Yuji Itadori es un estudiante de instituto con habilidades físicas excepcionales. Un día, para salvar a un amigo, se come un dedo maldito que contiene a Sukuna, el "Rey de las Maldiciones", convirtiéndose en su huésped. Para evitar su ejecución, se une a la Escuela de Jujutsu de Tokio, donde aprende a controlar el poder de Sukuna mientras combate otras maldiciones.',
-                    rating: 8.8,
-                    episodes: 24,
-                    status: 'En emisión',
-                    genres: ['Acción', 'Sobrenatural', 'Horror', 'Shounen'],
-                    characters: [
-                        { name: 'Yuji Itadori', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Megumi Fushiguro', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Nobara Kugisaki', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Satoru Gojo', image: 'https://via.placeholder.com/100x100' }
-                    ],
-                    year: 2020,
-                    studio: 'MAPPA'
-                },
-                'my-hero-academia': {
-                    title: 'My Hero Academia',
-                    image: 'https://via.placeholder.com/400x225',
-                    largeImage: 'https://via.placeholder.com/600x900',
-                    description: 'En un mundo donde la mayoría de las personas tienen superpoderes llamados "Quirks", Izuku Midoriya sueña con convertirse en un héroe a pesar de no tener ningún poder. Su destino cambia cuando conoce a All Might, el héroe número uno, quien le otorga su "Quirk" y la oportunidad de asistir a la Academia U.A., una escuela para héroes en formación.',
-                    rating: 8.4,
-                    episodes: 113,
-                    status: 'En emisión',
-                    genres: ['Acción', 'Comedia', 'Superhéroes', 'Shounen'],
-                    characters: [
-                        { name: 'Izuku Midoriya', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Katsuki Bakugo', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Ochaco Uraraka', image: 'https://via.placeholder.com/100x100' },
-                        { name: 'Shoto Todoroki', image: 'https://via.placeholder.com/100x100' }
-                    ],
-                    year: 2016,
-                    studio: 'Bones'
-                }
-            };
-
-            // Abrir/cerrar menú lateral
-            menuBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-            });
-
-            // Cerrar menú al hacer clic en el overlay
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-            });
-
-            // Navegación del libro
-            function updateBook() {
-                pages.forEach((page, index) => {
-                    if (index === currentPage) {
-                        page.style.display = 'block';
-                    } else {
-                        page.style.display = 'none';
+            // Variables de estado
+            let isDraggingProgress = false;
+            let isDraggingVolume = false;
+            let player;
+            let isPlaying = false;
+            let currentVolume = 1;
+            let isMuted = false;
+            
+            // Cargar API de YouTube
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            
+            // Cuando la API de YouTube está lista
+            window.onYouTubeIframeAPIReady = function() {
+                player = new YT.Player('videoPlayer', {
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
                     }
                 });
+            };
+            
+            // Cuando el reproductor está listo
+            function onPlayerReady(event) {
+                updateTimer();
+                setInterval(updateTimer, 1000);
             }
-
-            prevBtn.addEventListener('click', function() {
-                if (currentPage > 0) {
-                    currentPage--;
-                    updateBook();
+            
+            // Manejar cambios de estado del reproductor
+            function onPlayerStateChange(event) {
+                switch(event.data) {
+                    case YT.PlayerState.PLAYING:
+                        isPlaying = true;
+                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        loadingSpinner.style.display = 'none';
+                        break;
+                    case YT.PlayerState.PAUSED:
+                        isPlaying = false;
+                        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        break;
+                    case YT.PlayerState.BUFFERING:
+                        loadingSpinner.style.display = 'block';
+                        break;
+                    case YT.PlayerState.ENDED:
+                        isPlaying = false;
+                        playPauseBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                        break;
+                }
+            }
+            
+            // Actualizar temporizador y barra de progreso
+            function updateTimer() {
+                if (!player || !player.getCurrentTime) return;
+                
+                const currentTime = player.getCurrentTime();
+                const duration = player.getDuration();
+                
+                // Formatear tiempo
+                currentTimeEl.textContent = formatTime(currentTime);
+                durationEl.textContent = formatTime(duration);
+                
+                // Actualizar barra de progreso
+                if (!isDraggingProgress) {
+                    const progressPercent = (currentTime / duration) * 100;
+                    progressBar.style.width = `${progressPercent}%`;
+                }
+            }
+            
+            // Formatear tiempo (mm:ss)
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            // Event listeners para controles
+            playPauseBtn.addEventListener('click', function() {
+                if (!player) return;
+                
+                if (isPlaying) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
                 }
             });
-
-            nextBtn.addEventListener('click', function() {
-                if (currentPage < totalPages - 1) {
-                    currentPage++;
-                    updateBook();
+            
+            muteBtn.addEventListener('click', function() {
+                if (!player) return;
+                
+                if (isMuted) {
+                    player.unMute();
+                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    volumeBar.style.width = `${currentVolume * 100}%`;
+                } else {
+                    player.mute();
+                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    volumeBar.style.width = '0%';
                 }
+                isMuted = !isMuted;
             });
-
-            // Inicializar libro
-            updateBook();
-
-            // Buscador
-            const searchInput = document.querySelector('.search-input');
-            searchInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    const searchTerm = searchInput.value.toLowerCase();
-                    alert(`Buscando: ${searchTerm}`);
-                }
+            
+            // Barra de progreso
+            progressContainer.addEventListener('click', function(e) {
+                if (!player) return;
+                
+                const rect = this.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                const duration = player.getDuration();
+                const newTime = percent * duration;
+                
+                player.seekTo(newTime, true);
             });
-
-            // Funcionalidad del modal para opciones del menú
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const option = this.getAttribute('data-option');
-                    showMenuModal(option);
+            
+            progressContainer.addEventListener('mousedown', function() {
+                isDraggingProgress = true;
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDraggingProgress && player) {
+                    const rect = progressContainer.getBoundingClientRect();
+                    const percent = Math.min(Math.max((e.clientX - rect.left) / rect.width, 1), 0);
+                    const duration = player.getDuration();
+                    const newTime = percent * duration;
                     
-                    // Cerrar el menú lateral al seleccionar una opción
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                });
+                    progressBar.style.width = `${percent * 100}%`;
+                    currentTimeEl.textContent = formatTime(newTime);
+                }
             });
-
-            // Funcionalidad del modal para tarjetas de anime
-            animeCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const animeId = this.getAttribute('data-anime');
-                    showAnimeModal(animeId);
-                });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDraggingProgress && player) {
+                    isDraggingProgress = false;
+                    const percent = parseFloat(progressBar.style.width) / 100;
+                    const duration = player.getDuration();
+                    const newTime = percent * duration;
+                    
+                    player.seekTo(newTime, true);
+                }
             });
-
-            // Mostrar modal del menú
-            function showMenuModal(option) {
-                let title = '';
-                let content = '';
+            
+            // Control de volumen
+            volumeSlider.addEventListener('click', function(e) {
+                if (!player) return;
                 
-                switch(option) {
-                    case 'inicio':
-                        title = 'Inicio';
-                        content = '<p>Bienvenido a la página de inicio. Aquí encontrarás los animes más recientes y recomendados.</p>';
-                        break;
-                    case 'populares':
-                        title = 'Animes Populares';
-                        content = `
-                            <h3>Top 5 Animes Populares</h3>
-                            <ol>
-                                <li>Attack on Titan</li>
-                                <li>Demon Slayer</li>
-                                <li>Jujutsu Kaisen</li>
-                                <li>My Hero Academia</li>
-                                <li>One Piece</li>
-                            </ol>
-                            <p>Estos son los animes más vistos este mes.</p>
-                        `;
-                        break;
-                    case 'estrenos':
-                        title = 'Nuevos Estrenos';
-                        content = `
-                            <h3>Próximos Estrenos</h3>
-                            <ul>
-                                <li>Chainsaw Man - Temporada 2</li>
-                                <li>Demon Slayer - Arco del Castillo Infinito</li>
-                                <li>Attack on Titan - Final (Parte 3)</li>
-                            </ul>
-                            <p>¡No te pierdas estos emocionantes estrenos!</p>
-                        `;
-                        break;
-                    case 'generos':
-                        title = 'Géneros';
-                        content = `
-                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                                <span class="genre-tag">Acción</span>
-                                <span class="genre-tag">Aventura</span>
-                                <span class="genre-tag">Comedia</span>
-                                <span class="genre-tag">Drama</span>
-                                <span class="genre-tag">Fantasía</span>
-                                <span class="genre-tag">Horror</span>
-                                <span class="genre-tag">Misterio</span>
-                                <span class="genre-tag">Romance</span>
-                                <span class="genre-tag">Sci-Fi</span>
-                                <span class="genre-tag">Shounen</span>
-                            </div>
-                            <p style="margin-top: 15px;">Selecciona un género para filtrar los animes.</p>
-                        `;
-                        break;
-                    case 'lista':
-                        title = 'Mi Lista';
-                        content = `
-                            <p>Aquí puedes guardar tus animes favoritos para verlos más tarde.</p>
-                            <div style="border: 1px dashed #ccc; padding: 15px; text-align: center; margin-top: 10px;">
-                                <p style="color: #7f8c8d;">Tu lista está vacía</p>
-                                <button style="margin-top: 10px; padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                    Explorar Animes
-                                </button>
-                            </div>
-                        `;
-                        break;
-                    case 'configuracion':
-                        title = 'Configuración';
-                        content = `
-                            <h3>Opciones de Configuración</h3>
-                            <div style="margin-top: 15px;">
-                                <label style="display: block; margin-bottom: 10px;">
-                                    <input type="checkbox"> Modo Oscuro
-                                </label>
-                                <label style="display: block; margin-bottom: 10px;">
-                                    <input type="checkbox"> Notificaciones
-                                </label>
-                                <label style="display: block; margin-bottom: 10px;">
-                                    <input type="checkbox"> Autoplay
-                                </label>
-                            </div>
-                            <button style="margin-top: 15px; padding: 8px 15px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                Guardar Cambios
-                            </button>
-                        `;
-                        break;
-                    case 'ayuda':
-                        title = 'Ayuda';
-                        content = `
-                            <h3>Centro de Ayuda</h3>
-                            <p>Si necesitas asistencia, por favor contáctanos:</p>
-                            <ul style="margin-top: 10px; margin-bottom: 15px;">
-                                <li>Email: soporte@animebook.com</li>
-                                <li>Teléfono: +1 234 567 890</li>
-                                <li>Chat en vivo: Disponible 24/7</li>
-                            </ul>
-                            <p>También puedes consultar nuestras <a href="#" style="color: #3498db;">Preguntas Frecuentes</a>.</p>
-                        `;
-                        break;
-                    default:
-                        title = 'Opción no reconocida';
-                        content = '<p>La opción seleccionada no está disponible.</p>';
+                const rect = this.getBoundingClientRect();
+                const percent = Math.min(Math.max((e.clientX - rect.left) / rect.width, 1), 0);
+                
+                currentVolume = percent;
+                player.setVolume(percent * 100);
+                volumeBar.style.width = `${percent * 100}%`;
+                
+                if (percent === 0) {
+                    player.mute();
+                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    isMuted = true;
+                } else if (isMuted) {
+                    player.unMute();
+                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    isMuted = false;
                 }
-                
-                modalTitle.textContent = title;
-                modalContent.innerHTML = content;
-                
-                // Mostrar modal y overlay
-                modal.classList.add('active');
-                modalOverlay.classList.add('active');
-            }
-
-            // Mostrar modal del anime
-            function showAnimeModal(animeId) {
-                const anime = animeData[animeId];
-                
-                if (!anime) return;
-                
-                modalTitle.textContent = anime.title;
-                
-                // Crear contenido detallado del anime
-                const charactersHTML = anime.characters.map(character => `
-                    <div class="character-card">
-                        <img src="${character.image}" alt="${character.name}" class="character-image">
-                        <p class="character-name">${character.name}</p>
-                    </div>
-                `).join('');
-                
-                const genresHTML = anime.genres.map(genre => `
-                    <span class="genre-tag">${genre}</span>
-                `).join('');
-                
-                modalContent.innerHTML = `
-                    <div class="anime-details">
-                        <div class="anime-details-top">
-                            <img src="${anime.largeImage}" alt="${anime.title}" class="anime-modal-image">
-                            <div class="anime-modal-info">
-                                <h2 class="anime-modal-title">${anime.title}</h2>
-                                <div class="anime-meta">
-                                    <span class="anime-rating">★ ${anime.rating}</span>
-                                    <span>${anime.episodes} episodios</span>
-                                    <span>${anime.status}</span>
-                                    <span>${anime.year}</span>
-                                </div>
-                                <div class="anime-genres">${genresHTML}</div>
-                                <p class="anime-modal-description">${anime.description}</p>
-                                <div class="action-buttons">
-                                    <button class="action-btn watch-btn">Ver ahora</button>
-                                    <button class="action-btn favorite-btn">Añadir a favoritos</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="anime-characters">
-                            <h3>Personajes principales</h3>
-                            <div class="characters-grid">
-                                ${charactersHTML}
-                            </div>
-                        </div>
-                        <div style="margin-top: 20px;">
-                            <p><strong>Estudio:</strong> ${anime.studio}</p>
-                        </div>
-                    </div>
-                `;
-                
-                // Mostrar modal y overlay
-                modal.classList.add('active');
-                modalOverlay.classList.add('active');
-                
-                // Agregar eventos a los botones del modal
-                const watchBtn = modalContent.querySelector('.watch-btn');
-                const favoriteBtn = modalContent.querySelector('.favorite-btn');
-                
-                if (watchBtn) {
-                    watchBtn.addEventListener('click', function() {
-                        alert(`Comenzando a ver ${anime.title}`);
+            });
+            
+            volumeSlider.addEventListener('mousedown', function() {
+                isDraggingVolume = true;
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDraggingVolume && player) {
+                    const rect = volumeSlider.getBoundingClientRect();
+                    const percent = Math.min(Math.max((e.clientX - rect.left) / rect.width, 1), 0);
+                    
+                    currentVolume = percent;
+                    player.setVolume(percent * 100);
+                    volumeBar.style.width = `${percent * 100}%`;
+                    
+                    if (percent === 0) {
+                        player.mute();
+                        muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                        isMuted = true;
+                    } else if (isMuted) {
+                        player.unMute();
+                        muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        isMuted = false;
+                    }
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDraggingVolume = false;
+            });
+            
+            // Menú de configuración
+            qualityBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                settingsMenu.classList.toggle('show');
+            });
+            
+            document.addEventListener('click', function() {
+                settingsMenu.classList.remove('show');
+            });
+            
+            settingsMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Pantalla completa
+            fullscreenBtn.addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    videoContainer.requestFullscreen().catch(err => {
+                        alert(`Error al intentar pantalla completa: ${err.message}`);
                     });
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                } else {
+                    document.exitFullscreen();
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
                 }
-                
-                if (favoriteBtn) {
-                    favoriteBtn.addEventListener('click', function() {
-                        alert(`${anime.title} añadido a favoritos`);
-                    });
+            });
+            
+            // Detectar cambios en pantalla completa
+            document.addEventListener('fullscreenchange', function() {
+                if (document.fullscreenElement) {
+                    videoContainer.classList.add('fullscreen');
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                } else {
+                    videoContainer.classList.remove('fullscreen');
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
                 }
-            }
-
-            // Cerrar modal
-            function closeModal() {
-                modal.classList.remove('active');
-                modalOverlay.classList.remove('active');
-            }
-
-            modalClose.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', closeModal);
-
-            // Cerrar modal con ESC
+            });
+            
+            // Atajos de teclado
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    closeModal();
+                if (!player) return;
+                
+                switch(e.key) {
+                    case ' ':
+                        // Espacio para play/pause
+                        e.preventDefault();
+                        if (isPlaying) {
+                            player.pauseVideo();
+                        } else {
+                            player.playVideo();
+                        }
+                        break;
+                    case 'ArrowRight':
+                        // Flecha derecha para avanzar 5 segundos
+                        e.preventDefault();
+                        player.seekTo(player.getCurrentTime() + 5, true);
+                        break;
+                    case 'ArrowLeft':
+                        // Flecha izquierda para retroceder 5 segundos
+                        e.preventDefault();
+                        player.seekTo(player.getCurrentTime() - 5, true);
+                        break;
+                    case 'ArrowUp':
+                        // Flecha arriba para subir volumen
+                        e.preventDefault();
+                        const newVolUp = Math.min(currentVolume + 0.1, 1);
+                        player.setVolume(newVolUp * 100);
+                        currentVolume = newVolUp;
+                        volumeBar.style.width = `${newVolUp * 100}%`;
+                        if (isMuted) {
+                            player.unMute();
+                            muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                            isMuted = false;
+                        }
+                        break;
+                    case 'ArrowDown':
+                        // Flecha abajo para bajar volumen
+                        e.preventDefault();
+                        const newVolDown = Math.max(currentVolume - 0.1, 0);
+                        player.setVolume(newVolDown * 100);
+                        currentVolume = newVolDown;
+                        volumeBar.style.width = `${newVolDown * 100}%`;
+                        if (newVolDown === 0) {
+                            player.mute();
+                            muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                            isMuted = true;
+                        } else if (isMuted) {
+                            player.unMute();
+                            muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                            isMuted = false;
+                        }
+                        break;
+                    case 'm':
+                        // Tecla M para silenciar
+                        e.preventDefault();
+                        if (isMuted) {
+                            player.unMute();
+                            muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        } else {
+                            player.mute();
+                            muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                        }
+                        isMuted = !isMuted;
+                        break;
+                    case 'f':
+                        // Tecla F para pantalla completa
+                        e.preventDefault();
+                        if (!document.fullscreenElement) {
+                            videoContainer.requestFullscreen();
+                            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                        } else {
+                            document.exitFullscreen();
+                            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                        }
+                        break;
                 }
             });
         });
