@@ -148,6 +148,7 @@
             margin-bottom: 20px;
             overflow: hidden;
             transition: transform 0.3s;
+            cursor: pointer;
         }
 
         .anime-card:hover {
@@ -230,6 +231,181 @@
             pointer-events: all;
         }
 
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .modal-content {
+            margin-bottom: 20px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Detalles del anime en el modal */
+        .anime-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .anime-details-top {
+            display: flex;
+            gap: 20px;
+        }
+
+        .anime-modal-image {
+            width: 250px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .anime-modal-info {
+            flex: 1;
+        }
+
+        .anime-modal-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .anime-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+        }
+
+        .anime-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .anime-modal-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .anime-characters {
+            margin-top: 20px;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            text-align: center;
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+
+        .character-name {
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .watch-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .watch-btn:hover {
+            background: #c0392b;
+        }
+
+        .favorite-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .favorite-btn:hover {
+            background: #2980b9;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .book {
@@ -246,6 +422,21 @@
             .page-left, .page-right {
                 transform-origin: center;
             }
+
+            .modal {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .anime-details-top {
+                flex-direction: column;
+            }
+
+            .anime-modal-image {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
         }
     </style>
 </head>
@@ -261,18 +452,30 @@
     <!-- Menú lateral -->
     <div class="sidebar" id="sidebar">
         <ul class="sidebar-menu">
-            <li>Inicio</li>
-            <li>Animes Populares</li>
-            <li>Nuevos Estrenos</li>
-            <li>Géneros</li>
-            <li>Mi Lista</li>
-            <li>Configuración</li>
-            <li>Ayuda</li>
+            <li data-option="inicio">Inicio</li>
+            <li data-option="populares">Animes Populares</li>
+            <li data-option="estrenos">Nuevos Estrenos</li>
+            <li data-option="generos">Géneros</li>
+            <li data-option="lista">Mi Lista</li>
+            <li data-option="configuracion">Configuración</li>
+            <li data-option="ayuda">Ayuda</li>
         </ul>
     </div>
 
     <!-- Overlay para cerrar el menú -->
     <div class="overlay" id="overlay"></div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Título del Modal</h2>
+            <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-content" id="modalContent">
+            <!-- Contenido dinámico se insertará aquí -->
+        </div>
+    </div>
+    <div class="modal-overlay" id="modalOverlay"></div>
 
     <!-- Contenido principal -->
     <div class="main-content">
@@ -282,8 +485,8 @@
                 <div class="page page-left">
                     <h2>Animes Destacados</h2>
                     
-                    <div class="anime-card">
-                        <img src="https://via.placeholder.com/400x225" alt="Anime 1" class="anime-image">
+                    <div class="anime-card" data-anime="attack-on-titan">
+                        <img src="https://via.placeholder.com/400x225" alt="Attack on Titan" class="anime-image">
                         <div class="anime-info">
                             <h3 class="anime-title">Attack on Titan</h3>
                             <p class="anime-description">La humanidad vive en ciudades rodeadas por enormes muros que los protegen de los titanes, seres gigantescos que devoran personas.</p>
@@ -295,8 +498,8 @@
                         </div>
                     </div>
                     
-                    <div class="anime-card">
-                        <img src="https://via.placeholder.com/400x225" alt="Anime 2" class="anime-image">
+                    <div class="anime-card" data-anime="demon-slayer">
+                        <img src="https://via.placeholder.com/400x225" alt="Demon Slayer" class="anime-image">
                         <div class="anime-info">
                             <h3 class="anime-title">Demon Slayer</h3>
                             <p class="anime-description">Tanjiro Kamado se convierte en un cazador de demonios después de que su familia es asesinada y su hermana convertida en demonio.</p>
@@ -313,8 +516,8 @@
                 <div class="page page-right">
                     <h2>Recomendados para ti</h2>
                     
-                    <div class="anime-card">
-                        <img src="https://via.placeholder.com/400x225" alt="Anime 3" class="anime-image">
+                    <div class="anime-card" data-anime="jujutsu-kaisen">
+                        <img src="https://via.placeholder.com/400x225" alt="Jujutsu Kaisen" class="anime-image">
                         <div class="anime-info">
                             <h3 class="anime-title">Jujutsu Kaisen</h3>
                             <p class="anime-description">Yuji Itadori se une a una organización secreta de hechiceros para eliminar una poderosa maldición a la que se ha convertido su amigo.</p>
@@ -326,8 +529,8 @@
                         </div>
                     </div>
                     
-                    <div class="anime-card">
-                        <img src="https://via.placeholder.com/400x225" alt="Anime 4" class="anime-image">
+                    <div class="anime-card" data-anime="my-hero-academia">
+                        <img src="https://via.placeholder.com/400x225" alt="My Hero Academia" class="anime-image">
                         <div class="anime-info">
                             <h3 class="anime-title">My Hero Academia</h3>
                             <p class="anime-description">En un mundo donde la mayoría tiene superpoderes, Izuku Midoriya sueña con convertirse en héroe a pesar de no tener ningún poder.</p>
@@ -359,8 +562,92 @@
             const nextBtn = document.getElementById('nextBtn');
             const book = document.querySelector('.book');
             const pages = document.querySelectorAll('.page');
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            const modalClose = document.getElementById('modalClose');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            const animeCards = document.querySelectorAll('.anime-card');
+            
             let currentPage = 0;
             const totalPages = pages.length;
+
+            // Datos de los animes (simulando una base de datos)
+            const animeData = {
+                'attack-on-titan': {
+                    title: 'Attack on Titan',
+                    image: 'https://via.placeholder.com/400x225',
+                    largeImage: 'https://via.placeholder.com/600x900',
+                    description: 'La humanidad vive en ciudades rodeadas por enormes muros que los protegen de los titanes, seres gigantescos que devoran personas. La historia sigue a Eren Yeager, quien jura vengarse de los titanes después de que destruyen su ciudad natal y matan a su madre.',
+                    rating: 9.0,
+                    episodes: 75,
+                    status: 'Finalizado',
+                    genres: ['Acción', 'Drama', 'Fantasía', 'Shounen'],
+                    characters: [
+                        { name: 'Eren Yeager', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Mikasa Ackerman', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Armin Arlert', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Levi Ackerman', image: 'https://via.placeholder.com/100x100' }
+                    ],
+                    year: 2013,
+                    studio: 'Wit Studio / MAPPA'
+                },
+                'demon-slayer': {
+                    title: 'Demon Slayer',
+                    image: 'https://via.placeholder.com/400x225',
+                    largeImage: 'https://via.placeholder.com/600x900',
+                    description: 'Tanjiro Kamado es un joven que vive con su familia en las montañas. Un día, al regresar de un viaje, encuentra que su familia ha sido masacrada por demonios, y que su hermana Nezuko se ha convertido en uno de ellos. Tanjiro decide convertirse en un cazador de demonios para vengar a su familia y encontrar una cura para Nezuko.',
+                    rating: 8.7,
+                    episodes: 26,
+                    status: 'En emisión',
+                    genres: ['Acción', 'Aventura', 'Shounen', 'Sobrenatural'],
+                    characters: [
+                        { name: 'Tanjiro Kamado', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Nezuko Kamado', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Zenitsu Agatsuma', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Inosuke Hashibira', image: 'https://via.placeholder.com/100x100' }
+                    ],
+                    year: 2019,
+                    studio: 'Ufotable'
+                },
+                'jujutsu-kaisen': {
+                    title: 'Jujutsu Kaisen',
+                    image: 'https://via.placeholder.com/400x225',
+                    largeImage: 'https://via.placeholder.com/600x900',
+                    description: 'Yuji Itadori es un estudiante de instituto con habilidades físicas excepcionales. Un día, para salvar a un amigo, se come un dedo maldito que contiene a Sukuna, el "Rey de las Maldiciones", convirtiéndose en su huésped. Para evitar su ejecución, se une a la Escuela de Jujutsu de Tokio, donde aprende a controlar el poder de Sukuna mientras combate otras maldiciones.',
+                    rating: 8.8,
+                    episodes: 24,
+                    status: 'En emisión',
+                    genres: ['Acción', 'Sobrenatural', 'Horror', 'Shounen'],
+                    characters: [
+                        { name: 'Yuji Itadori', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Megumi Fushiguro', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Nobara Kugisaki', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Satoru Gojo', image: 'https://via.placeholder.com/100x100' }
+                    ],
+                    year: 2020,
+                    studio: 'MAPPA'
+                },
+                'my-hero-academia': {
+                    title: 'My Hero Academia',
+                    image: 'https://via.placeholder.com/400x225',
+                    largeImage: 'https://via.placeholder.com/600x900',
+                    description: 'En un mundo donde la mayoría de las personas tienen superpoderes llamados "Quirks", Izuku Midoriya sueña con convertirse en un héroe a pesar de no tener ningún poder. Su destino cambia cuando conoce a All Might, el héroe número uno, quien le otorga su "Quirk" y la oportunidad de asistir a la Academia U.A., una escuela para héroes en formación.',
+                    rating: 8.4,
+                    episodes: 113,
+                    status: 'En emisión',
+                    genres: ['Acción', 'Comedia', 'Superhéroes', 'Shounen'],
+                    characters: [
+                        { name: 'Izuku Midoriya', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Katsuki Bakugo', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Ochaco Uraraka', image: 'https://via.placeholder.com/100x100' },
+                        { name: 'Shoto Todoroki', image: 'https://via.placeholder.com/100x100' }
+                    ],
+                    year: 2016,
+                    studio: 'Bones'
+                }
+            };
 
             // Abrir/cerrar menú lateral
             menuBtn.addEventListener('click', function() {
@@ -376,8 +663,6 @@
 
             // Navegación del libro
             function updateBook() {
-                // En un libro real, aquí iría la animación para girar páginas
-                // Por simplicidad, alternamos la visibilidad de las páginas
                 pages.forEach((page, index) => {
                     if (index === currentPage) {
                         page.style.display = 'block';
@@ -404,13 +689,233 @@
             // Inicializar libro
             updateBook();
 
-            // Buscador (funcionalidad básica)
+            // Buscador
             const searchInput = document.querySelector('.search-input');
             searchInput.addEventListener('keyup', function(e) {
                 if (e.key === 'Enter') {
                     const searchTerm = searchInput.value.toLowerCase();
                     alert(`Buscando: ${searchTerm}`);
-                    // En una implementación real, aquí filtrarías los animes
+                }
+            });
+
+            // Funcionalidad del modal para opciones del menú
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const option = this.getAttribute('data-option');
+                    showMenuModal(option);
+                    
+                    // Cerrar el menú lateral al seleccionar una opción
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                });
+            });
+
+            // Funcionalidad del modal para tarjetas de anime
+            animeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const animeId = this.getAttribute('data-anime');
+                    showAnimeModal(animeId);
+                });
+            });
+
+            // Mostrar modal del menú
+            function showMenuModal(option) {
+                let title = '';
+                let content = '';
+                
+                switch(option) {
+                    case 'inicio':
+                        title = 'Inicio';
+                        content = '<p>Bienvenido a la página de inicio. Aquí encontrarás los animes más recientes y recomendados.</p>';
+                        break;
+                    case 'populares':
+                        title = 'Animes Populares';
+                        content = `
+                            <h3>Top 5 Animes Populares</h3>
+                            <ol>
+                                <li>Attack on Titan</li>
+                                <li>Demon Slayer</li>
+                                <li>Jujutsu Kaisen</li>
+                                <li>My Hero Academia</li>
+                                <li>One Piece</li>
+                            </ol>
+                            <p>Estos son los animes más vistos este mes.</p>
+                        `;
+                        break;
+                    case 'estrenos':
+                        title = 'Nuevos Estrenos';
+                        content = `
+                            <h3>Próximos Estrenos</h3>
+                            <ul>
+                                <li>Chainsaw Man - Temporada 2</li>
+                                <li>Demon Slayer - Arco del Castillo Infinito</li>
+                                <li>Attack on Titan - Final (Parte 3)</li>
+                            </ul>
+                            <p>¡No te pierdas estos emocionantes estrenos!</p>
+                        `;
+                        break;
+                    case 'generos':
+                        title = 'Géneros';
+                        content = `
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <span class="genre-tag">Acción</span>
+                                <span class="genre-tag">Aventura</span>
+                                <span class="genre-tag">Comedia</span>
+                                <span class="genre-tag">Drama</span>
+                                <span class="genre-tag">Fantasía</span>
+                                <span class="genre-tag">Horror</span>
+                                <span class="genre-tag">Misterio</span>
+                                <span class="genre-tag">Romance</span>
+                                <span class="genre-tag">Sci-Fi</span>
+                                <span class="genre-tag">Shounen</span>
+                            </div>
+                            <p style="margin-top: 15px;">Selecciona un género para filtrar los animes.</p>
+                        `;
+                        break;
+                    case 'lista':
+                        title = 'Mi Lista';
+                        content = `
+                            <p>Aquí puedes guardar tus animes favoritos para verlos más tarde.</p>
+                            <div style="border: 1px dashed #ccc; padding: 15px; text-align: center; margin-top: 10px;">
+                                <p style="color: #7f8c8d;">Tu lista está vacía</p>
+                                <button style="margin-top: 10px; padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    Explorar Animes
+                                </button>
+                            </div>
+                        `;
+                        break;
+                    case 'configuracion':
+                        title = 'Configuración';
+                        content = `
+                            <h3>Opciones de Configuración</h3>
+                            <div style="margin-top: 15px;">
+                                <label style="display: block; margin-bottom: 10px;">
+                                    <input type="checkbox"> Modo Oscuro
+                                </label>
+                                <label style="display: block; margin-bottom: 10px;">
+                                    <input type="checkbox"> Notificaciones
+                                </label>
+                                <label style="display: block; margin-bottom: 10px;">
+                                    <input type="checkbox"> Autoplay
+                                </label>
+                            </div>
+                            <button style="margin-top: 15px; padding: 8px 15px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                Guardar Cambios
+                            </button>
+                        `;
+                        break;
+                    case 'ayuda':
+                        title = 'Ayuda';
+                        content = `
+                            <h3>Centro de Ayuda</h3>
+                            <p>Si necesitas asistencia, por favor contáctanos:</p>
+                            <ul style="margin-top: 10px; margin-bottom: 15px;">
+                                <li>Email: soporte@animebook.com</li>
+                                <li>Teléfono: +1 234 567 890</li>
+                                <li>Chat en vivo: Disponible 24/7</li>
+                            </ul>
+                            <p>También puedes consultar nuestras <a href="#" style="color: #3498db;">Preguntas Frecuentes</a>.</p>
+                        `;
+                        break;
+                    default:
+                        title = 'Opción no reconocida';
+                        content = '<p>La opción seleccionada no está disponible.</p>';
+                }
+                
+                modalTitle.textContent = title;
+                modalContent.innerHTML = content;
+                
+                // Mostrar modal y overlay
+                modal.classList.add('active');
+                modalOverlay.classList.add('active');
+            }
+
+            // Mostrar modal del anime
+            function showAnimeModal(animeId) {
+                const anime = animeData[animeId];
+                
+                if (!anime) return;
+                
+                modalTitle.textContent = anime.title;
+                
+                // Crear contenido detallado del anime
+                const charactersHTML = anime.characters.map(character => `
+                    <div class="character-card">
+                        <img src="${character.image}" alt="${character.name}" class="character-image">
+                        <p class="character-name">${character.name}</p>
+                    </div>
+                `).join('');
+                
+                const genresHTML = anime.genres.map(genre => `
+                    <span class="genre-tag">${genre}</span>
+                `).join('');
+                
+                modalContent.innerHTML = `
+                    <div class="anime-details">
+                        <div class="anime-details-top">
+                            <img src="${anime.largeImage}" alt="${anime.title}" class="anime-modal-image">
+                            <div class="anime-modal-info">
+                                <h2 class="anime-modal-title">${anime.title}</h2>
+                                <div class="anime-meta">
+                                    <span class="anime-rating">★ ${anime.rating}</span>
+                                    <span>${anime.episodes} episodios</span>
+                                    <span>${anime.status}</span>
+                                    <span>${anime.year}</span>
+                                </div>
+                                <div class="anime-genres">${genresHTML}</div>
+                                <p class="anime-modal-description">${anime.description}</p>
+                                <div class="action-buttons">
+                                    <button class="action-btn watch-btn">Ver ahora</button>
+                                    <button class="action-btn favorite-btn">Añadir a favoritos</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="anime-characters">
+                            <h3>Personajes principales</h3>
+                            <div class="characters-grid">
+                                ${charactersHTML}
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <p><strong>Estudio:</strong> ${anime.studio}</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Mostrar modal y overlay
+                modal.classList.add('active');
+                modalOverlay.classList.add('active');
+                
+                // Agregar eventos a los botones del modal
+                const watchBtn = modalContent.querySelector('.watch-btn');
+                const favoriteBtn = modalContent.querySelector('.favorite-btn');
+                
+                if (watchBtn) {
+                    watchBtn.addEventListener('click', function() {
+                        alert(`Comenzando a ver ${anime.title}`);
+                    });
+                }
+                
+                if (favoriteBtn) {
+                    favoriteBtn.addEventListener('click', function() {
+                        alert(`${anime.title} añadido a favoritos`);
+                    });
+                }
+            }
+
+            // Cerrar modal
+            function closeModal() {
+                modal.classList.remove('active');
+                modalOverlay.classList.remove('active');
+            }
+
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', closeModal);
+
+            // Cerrar modal con ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    closeModal();
                 }
             });
         });
